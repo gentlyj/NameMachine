@@ -35,10 +35,17 @@ public class NameActivity extends AppCompatActivity{
         String midName = intent.getStringExtra(MainActivity.MID_NAME);
         if (midName == null){
             mTvMidName.setVisibility(View.INVISIBLE);
+            generateName(lastName,null);
         }else{
             mTvMidName.setText(midName);
+            generateName(lastName,midName);
+
         }
         mTvLastName.setText(lastName);
+
+    }
+
+    private void generateName(String lastName, String midName) {
 
     }
 }

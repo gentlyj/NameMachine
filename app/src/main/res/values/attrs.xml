@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SegementControl">
+        <attr name="left_text" format="reference|string" />
+        <attr name="right_text" format="reference|string" />
+        <attr name="mid_text" format="reference|string" />
+        <attr name="default_select">
+            <enum name="left" value="0" />
+            <enum name="mid" value="1" />
+            <enum name="right" value="2"/>
+        </attr>
+        <attr name="max_item">
+            <enum name="two" value="1" />
+            <enum name="three" value="2" />
+        </attr>
+        <attr name="select_backgroud_color" format="string" />
+        <attr name="unselect_backgroud_color" format="string" />
+        <attr name="select_text_color" format="string" />
+        <attr name="unselect_text_color" format="string" />
+        <attr name="boder_color" format="string" />
+        <attr name="boder_angle">
+            <enum name="small" value="0" />
+            <enum name="normal" value="1" />
+            <enum name="big" value="2" />
+        </attr>
+    </declare-styleable>
+
+</resources>

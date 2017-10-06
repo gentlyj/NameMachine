@@ -7,9 +7,28 @@
     tools:context="com.ifading.namemachine.MainActivity">
 
     <Button
+        android:layout_alignParentBottom="true"
         android:id="@+id/main_btn_generate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Generate"/>
+
+    <com.ifading.namemachine.view.SegementControl
+        android:layout_centerInParent="true"
+        android:layout_marginStart="10dp"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        app:max_item="two"
+        app:default_select="right"
+        app:left_text="两字"
+        app:mid_text="三字"
+        app:right_text="四字"
+        app:select_backgroud_color="#0000ff"
+        app:unselect_backgroud_color="#ffffff"
+        app:select_text_color="#ffffff"
+        app:unselect_text_color="#0000ff"
+        app:boder_color="#0000ff"
+        app:boder_angle="normal"
+        />
 
 </RelativeLayout>
