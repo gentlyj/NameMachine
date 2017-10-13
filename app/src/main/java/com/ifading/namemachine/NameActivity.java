@@ -9,11 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -49,34 +46,34 @@ public class NameActivity extends AppCompatActivity {
         String lastName = intent.getStringExtra(MainActivity.LAST_NAME);
         String midName = intent.getStringExtra(MainActivity.MID_NAME);
         if (midName == null) {
-            Log.d(TAG, "contentByAsset1");
-
             mTvMidName.setVisibility(View.INVISIBLE);
-            generateName(lastName);
+            generateName(lastName, true);
         } else {
             mTvMidName.setText(midName);
             //generateName(lastName, midName);
-            Log.d(TAG, "contentByAsset2");
-            generateName(lastName);
-
+            generateName(lastName, true);
         }
         mTvLastName.setText(lastName);
 
     }
 
-    public void generateName(String lastName) {
+    public void generateName(String lastName, boolean doubleChar) {
 
         Random random = new Random();
         String contentByAsset = getContentByAsset("cuci.txt");
-        Log.d(TAG, "contentByAsset:" + contentByAsset);
+        //Log.d(TAG, "contentByAsset:" + contentByAsset);
         if (contentByAsset == null) {
             return;
         }
-        random.setSeed(contentByAsset.length());
         for (int i = 0; i < 100; i++) {
-            String midName = createharacterC(random, contentByAsset);
-            String firstName = createharacterC(random, contentByAsset);
-            String name = lastName + midName + firstName;
+            String name;
+            if (doubleChar) {
+                name = lastName + createDoubleCharacter(random, contentByAsset);
+            } else {
+                String midName = createCharacter(random, contentByAsset);
+                String firstName = createCharacter(random, contentByAsset);
+                name = lastName + midName + firstName;
+            }
             addCache(name);
         }
         for (String str :
@@ -95,17 +92,37 @@ public class NameActivity extends AppCompatActivity {
         mNameList.add(name);
     }
 
-    private String createharacterC(Random random, String content) {
+    private String createCharacter(Random random, String content) {
         int index = random.nextInt(content.length());
         if (Math.abs(index - mLastIndex) < 100) {
-            return createharacterC(random, content);
+            return createCharacter(random, content);
         }
         mLastIndex = index;
         char charAt = content.charAt(index);
         if (isChinese(charAt)) {
             return String.valueOf(charAt);
         } else {
-            return createharacterC(random, content);
+            return createCharacter(random, content);
+        }
+    }
+
+    private String createDoubleCharacter(Random random, String content) {
+        int index = random.nextInt(content.length());
+        if (Math.abs(index - mLastIndex) < 100) {
+            return createDoubleCharacter(random, content);
+        }
+        mLastIndex = index;
+        char midName = content.charAt(index);
+        char firstName = content.charAt(index + 1);
+        Log.d(TAG, "index:" + index + " isChinese(midName):" + isChinese(midName) + " isChinese(firstName):" + isChinese(firstName));
+        if (isChinese(midName) && isChinese(firstName)) {
+            String sMid = String.valueOf(midName);
+            String sFir = String.valueOf(firstName);
+            String result = sMid + sFir;
+            Log.d(TAG, "sMid:" + sMid + " char:" + midName + " sFir:" + sFir + " firstName:" + firstName + " result:" + result);
+            return result;
+        } else {
+            return createDoubleCharacter(random, content);
         }
     }
 
@@ -117,6 +134,19 @@ public class NameActivity extends AppCompatActivity {
 
     }
 
+    private static final boolean isChinese1(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 按行读取txt
      *
@@ -125,7 +155,7 @@ public class NameActivity extends AppCompatActivity {
      * @throws Exception
      */
     private String readTextFromSDcard(InputStream is) throws Exception {
-        InputStreamReader reader = new InputStreamReader(is);//, "UTF-8"
+        InputStreamReader reader = new InputStreamReader(is, "gbk");//, "UTF-8"
         BufferedReader bufferedReader = new BufferedReader(reader);
         StringBuffer buffer = new StringBuffer("");
         String str;
