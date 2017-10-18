@@ -5,19 +5,32 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 
+import com.ifading.namemachine.adapter.SwipeNameAdapter;
+import com.ifading.namemachine.application.BaseApplication;
+import com.ifading.namemachine.db.NameBean;
+import com.ifading.namemachine.swipecard.CardConfig;
+import com.ifading.namemachine.swipecard.OverLayCardLayoutManager;
+import com.ifading.namemachine.swipecard.TanTanCallback;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.objectbox.Box;
+import io.objectbox.query.QueryBuilder;
 
 /**
  * Created by yangjingsheng on 17/9/28.
@@ -31,10 +44,15 @@ public class NameActivity extends AppCompatActivity {
     protected TextView mTvMidName;
     @BindView(R.id.name_activity_tv_first_name)
     protected TextView mTvFirstName;
+    @BindView(R.id.name_rv)
+    protected RecyclerView mRv;
 
 
     ArrayList<String> mNameList = new ArrayList<>();
     private int mLastIndex;
+
+    SwipeNameAdapter mAdapter;
+    private Box<NameBean> namesBox;
 
 
     @Override
@@ -54,6 +72,33 @@ public class NameActivity extends AppCompatActivity {
             generateName(lastName, true);
         }
         mTvLastName.setText(lastName);
+        initNameTable();
+        initData();
+    }
+
+    private void initNameTable() {
+        namesBox = ((BaseApplication) getApplication()).getBoxStore().boxFor(NameBean.class);
+    }
+
+    private void initData() {
+        mAdapter = new SwipeNameAdapter();
+        //String[] names = {"一一", "二二", "三三", "四四", "一一", "二二", "三三", "四四", "一一", "二二", "三三", "四四", "一一", "二二", "三三", "四四"};
+
+        mAdapter.setData(mNameList);
+        mRv.setLayoutManager(new OverLayCardLayoutManager());
+        mRv.setAdapter(mAdapter);
+        CardConfig.initConfig(this);
+        final TanTanCallback callback = new TanTanCallback(mRv, mAdapter, mNameList);
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mRv);
+        mAdapter.notifyDataSetChanged();
+        callback.setBox(namesBox);
+        QueryBuilder<NameBean> query = namesBox.query();
+        List<NameBean> nameBeens = query.build().find();
+        for (NameBean bean :
+                nameBeens) {
+            Log.d(TAG, "NAME:" + bean.getName());
+        }
 
     }
 
@@ -114,12 +159,12 @@ public class NameActivity extends AppCompatActivity {
         mLastIndex = index;
         char midName = content.charAt(index);
         char firstName = content.charAt(index + 1);
-        Log.d(TAG, "index:" + index + " isChinese(midName):" + isChinese(midName) + " isChinese(firstName):" + isChinese(firstName));
+        //Log.d(TAG, "index:" + index + " isChinese(midName):" + isChinese(midName) + " isChinese(firstName):" + isChinese(firstName));
         if (isChinese(midName) && isChinese(firstName)) {
             String sMid = String.valueOf(midName);
             String sFir = String.valueOf(firstName);
             String result = sMid + sFir;
-            Log.d(TAG, "sMid:" + sMid + " char:" + midName + " sFir:" + sFir + " firstName:" + firstName + " result:" + result);
+            //Log.d(TAG, "sMid:" + sMid + " char:" + midName + " sFir:" + sFir + " firstName:" + firstName + " result:" + result);
             return result;
         } else {
             return createDoubleCharacter(random, content);
@@ -168,7 +213,7 @@ public class NameActivity extends AppCompatActivity {
     }
 
     /**
-     * 从Asset读取text文件
+     * 从Asset读取txt文件
      *
      * @param filename 文件名
      */

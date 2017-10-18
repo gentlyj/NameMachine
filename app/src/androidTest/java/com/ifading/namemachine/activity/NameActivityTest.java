@@ -12,7 +12,6 @@ public class NameActivityTest {
 
     @Test
     public void testGenerateName(){
-        NameActivity activity = new NameActivity();
-        activity.generateName("杨");
+
     }
 }
