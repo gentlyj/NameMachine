@@ -39,7 +39,7 @@ public class TanTanCallback extends RenRenCallback {
     public TanTanCallback(RecyclerView rv, RecyclerView.Adapter adapter, List datas) {
         //this(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, rv, adapter, datas);
         super(rv, adapter, datas);
-        mHorizontalDeviation = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, mRv.getContext().getResources().getDisplayMetrics());
+        mHorizontalDeviation = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, mRv.getContext().getResources().getDisplayMetrics());
     }
 
     public TanTanCallback(int dragDirs, int swipeDirs, RecyclerView rv, RecyclerView.Adapter adapter, List datas) {
@@ -107,17 +107,14 @@ public class TanTanCallback extends RenRenCallback {
         //如果不需要循环删除
         Object remove = mDatas.remove(viewHolder.getLayoutPosition());
         mAdapter.notifyDataSetChanged();
-        Log.e("swipecard", "厉害了");
 
        if (isLeftSwipe){
-            Toast.makeText(mRv.getContext(), "左滑", Toast.LENGTH_SHORT).show();
+           Toast.makeText(mRv.getContext(), "喜欢", Toast.LENGTH_SHORT).show();
            NameBean nameBean = new NameBean();
            nameBean.setBook("cuci.txt");
            nameBean.setName((String)remove);
            mBox.put(nameBean);
-       }else {
-            Toast.makeText(mRv.getContext(), "右滑", Toast.LENGTH_SHORT).show();
-        }
+       }
 
         //探探只是第一层加了rotate & alpha的操作
         //对rotate进行复位

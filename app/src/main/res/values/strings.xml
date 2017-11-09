@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NameMachine</string>
+    <string name="title_activity_select">SelectActivity</string>
 </resources>

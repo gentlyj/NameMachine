@@ -3,6 +3,7 @@ package com.ifading.namemachine.application;
 import android.app.Application;
 
 import com.ifading.namemachine.db.MyObjectBox;
+import com.ifading.namemachine.db.ObjectBoxUtils;
 
 import io.objectbox.BoxStore;
 /**
@@ -13,15 +14,10 @@ import io.objectbox.BoxStore;
 
 public class BaseApplication extends Application {
 
-    public static BoxStore getBoxStore() {
-        return boxStore;
-    }
-
-    private static BoxStore boxStore;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        boxStore = MyObjectBox.builder().androidContext(BaseApplication.this).build();
+        ObjectBoxUtils.initDb(this);
+
     }
 }

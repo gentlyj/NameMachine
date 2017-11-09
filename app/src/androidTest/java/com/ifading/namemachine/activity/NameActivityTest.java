@@ -1,7 +1,5 @@
 package com.ifading.namemachine.activity;
 
-import com.ifading.namemachine.NameActivity;
-
 import org.junit.Test;
 
 /**
