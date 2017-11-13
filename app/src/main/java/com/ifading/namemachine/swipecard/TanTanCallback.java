@@ -34,6 +34,7 @@ public class TanTanCallback extends RenRenCallback {
 
     //一个flag 判断左右滑
     private boolean isLeftSwipe;
+    private int mNameNoteId;
 
 
     public TanTanCallback(RecyclerView rv, RecyclerView.Adapter adapter, List datas) {
@@ -113,6 +114,7 @@ public class TanTanCallback extends RenRenCallback {
            NameBean nameBean = new NameBean();
            nameBean.setBook("cuci.txt");
            nameBean.setName((String)remove);
+           nameBean.setNameNoteId(mNameNoteId);
            mBox.put(nameBean);
        }
 
@@ -199,5 +201,9 @@ public class TanTanCallback extends RenRenCallback {
 
     public void setBox(Box box){
         this.mBox = box;
+    }
+
+    public void setNameNoteId(int nameNoteId) {
+        this.mNameNoteId = nameNoteId;
     }
 }

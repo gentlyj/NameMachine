@@ -2,10 +2,7 @@ package com.ifading.namemachine.application;
 
 import android.app.Application;
 
-import com.ifading.namemachine.db.MyObjectBox;
 import com.ifading.namemachine.db.ObjectBoxUtils;
-
-import io.objectbox.BoxStore;
 /**
  * Application
  *

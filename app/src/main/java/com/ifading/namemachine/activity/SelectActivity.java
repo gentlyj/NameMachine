@@ -43,6 +43,7 @@ public class SelectActivity extends AppCompatActivity {
     SwipeNameAdapter mAdapter;
     private Box<NameBean> namesBox;
     private String lastName;
+    private int nameNoteId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class SelectActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         lastName = intent.getStringExtra(MainActivity.LAST_NAME);
+        nameNoteId = intent.getIntExtra(MainActivity.NAME_NOTE_ID, 0);
         String midName = intent.getStringExtra(MainActivity.MID_NAME);
         if (midName == null) {
             mTvMidName.setVisibility(View.INVISIBLE);
@@ -77,6 +79,7 @@ public class SelectActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(mRv);
         mAdapter.notifyDataSetChanged();
         callback.setBox(namesBox);
+        callback.setNameNoteId(nameNoteId);
     }
 
     private void initNameTable() {

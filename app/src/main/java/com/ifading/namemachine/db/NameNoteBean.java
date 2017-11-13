@@ -28,4 +28,12 @@ public class NameNoteBean {
     }
 
     private String itemName;
+
+    @Override
+    public String toString() {
+        return "NameNoteBean{" +
+                "id=" + id +
+                ", itemName='" + itemName + '\'' +
+                '}';
+    }
 }

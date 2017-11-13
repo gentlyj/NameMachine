@@ -17,7 +17,9 @@ import android.widget.TextView;
 
 import com.ifading.namemachine.R;
 import com.ifading.namemachine.adapter.NameRvAdapter;
+import com.ifading.namemachine.constant.NameConstant;
 import com.ifading.namemachine.db.NameBean;
+import com.ifading.namemachine.db.NameBean_;
 import com.ifading.namemachine.db.ObjectBoxUtils;
 
 import java.io.BufferedReader;
@@ -54,7 +56,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
     ArrayList<String> mNameList = new ArrayList<>();
     private int mLastIndex;
 
-    NameRvAdapter mAdapter;
+    private NameRvAdapter mAdapter;
     private Box<NameBean> namesBox;
     private String lastName;
     private int nameNoteId;
@@ -68,8 +70,9 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
         ButterKnife.bind(this);
         Intent intent = getIntent();
 
-        nameNoteId = intent.getIntExtra(MainActivity.NAME_NOTE_ID,0);
+        nameNoteId = (int) intent.getLongExtra(MainActivity.NAME_NOTE_ID,0);
         lastName = intent.getStringExtra(MainActivity.LAST_NAME);
+        Log.d(TAG, "nameNoteId:" + nameNoteId + " lastName:" + lastName);
         mTvLastName.setText(lastName);
         initView();
         initNameTable();
@@ -88,7 +91,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
 
     private void initView() {
         mAdapter = new NameRvAdapter();
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL,false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mRv.setLayoutManager(layoutManager);
         mRv.setAdapter(mAdapter);
     }
@@ -98,16 +101,30 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
     }
 
     private void loadAndShowData() {
-        QueryBuilder<NameBean> query = namesBox.query();
+        Log.d(TAG, "loadAndShowData,nameNoteId:" + nameNoteId);
+        QueryBuilder<NameBean> query = namesBox.query().equal(NameBean_.nameNoteId, nameNoteId);//
         nameDatas = query.build().find();
         mAdapter.setData(nameDatas);
         mAdapter.notifyDataSetChanged();
-        mRv.scrollToPosition(mAdapter.getItemCount()-1);
+        mRv.scrollToPosition(mAdapter.getItemCount() - 1);
+        //addNameNoteId();
+        for (NameBean bean :
+                nameDatas) {
+            Log.d(TAG, "NAME:" + bean.toString());
+        }
+    }
+
+    private void addNameNoteId() {
+        for (NameBean bean :
+                nameDatas) {
+            bean.setNameNoteId(nameNoteId);
+            namesBox.put(bean);
+        }
     }
 
     @OnClick({R.id.name_activity_generate_name})
-    protected void onClick(View v){
-        if (v == mBtnGenerateName){
+    protected void onClick(View v) {
+        if (v == mBtnGenerateName) {
             showGenerateDialog();
         }
     }
@@ -134,7 +151,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
                 if (threeCharcterName) {
                     midName = edMidName.getText().toString();
                 }
-                startSelectActivity(midName,threeCharcterName);
+                startSelectActivity(midName, threeCharcterName);
                 dialog.dismiss();
             }
         });
@@ -147,11 +164,12 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
         });
     }
 
-    private void startSelectActivity(String midName,boolean threeCharcterName) {
+    private void startSelectActivity(String midName, boolean threeCharcterName) {
         Intent intent = new Intent(this, SelectActivity.class);
-        intent.putExtra(MainActivity.LAST_NAME,lastName);
-        intent.putExtra(MainActivity.MID_NAME,midName);
-        intent.putExtra(MainActivity.THREE_CHARCTER_NAME,threeCharcterName);
+        intent.putExtra(MainActivity.LAST_NAME, lastName);
+        intent.putExtra(MainActivity.NAME_NOTE_ID, nameNoteId);
+        intent.putExtra(MainActivity.MID_NAME, midName);
+        intent.putExtra(MainActivity.THREE_CHARCTER_NAME, threeCharcterName);
         startActivity(intent);
     }
 
@@ -191,7 +209,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
 
     private String createCharacter(Random random, String content) {
         int index = random.nextInt(content.length());
-        if (Math.abs(index - mLastIndex) < 100) {
+        if (Math.abs(index - mLastIndex) < NameConstant.GENERATE_NAME_DEFAULT_COUNT) {
             return createCharacter(random, content);
         }
         mLastIndex = index;
@@ -205,7 +223,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
 
     private String createDoubleCharacter(Random random, String content) {
         int index = random.nextInt(content.length());
-        if (Math.abs(index - mLastIndex) < 100) {
+        if (Math.abs(index - mLastIndex) < NameConstant.GENERATE_NAME_DEFAULT_COUNT) {
             return createDoubleCharacter(random, content);
         }
         mLastIndex = index;
@@ -222,7 +240,8 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
     }
 
     public static boolean isChinese(char c) {
-        return c >= 0x4E00 && c <= 0x9FA5;// 根据字节码判断
+        // 根据字节码判断
+        return c >= 0x4E00 && c <= 0x9FA5;
     }
 
     private static boolean isChinese1(char c) {
@@ -243,7 +262,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
      * @throws Exception
      */
     private String readTextFromSDcard(InputStream is) throws Exception {
-        InputStreamReader reader = new InputStreamReader(is, "gbk");//, "UTF-8"
+        InputStreamReader reader = new InputStreamReader(is, "gbk");
         BufferedReader bufferedReader = new BufferedReader(reader);
         StringBuffer buffer = new StringBuffer("");
         String str;
@@ -280,7 +299,6 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
     @Override
     public void onItemLongClick(int position) {
         NameBean nameBean = nameDatas.get(position);
-        String name = nameBean.getName();
         namesBox.remove(nameBean);
         loadAndShowData();
     }

@@ -47,6 +47,19 @@ public class NameNoteRvAdapter extends RecyclerView.Adapter {
                     }
                 }
             });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position < 0) {
+                        return true;
+                    }
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onLongClick(position);
+                    }
+                    return true;
+                }
+            });
         }
 
         public void setName(String name) {
@@ -65,6 +78,8 @@ public class NameNoteRvAdapter extends RecyclerView.Adapter {
 
     public interface OnItemClickListener {
         void onItemClick(int positon);
+
+        void onLongClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

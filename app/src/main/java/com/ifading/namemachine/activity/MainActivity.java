@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements NameNoteRvAdapter
     public static final String MID_NAME = "mid_name";
     public static final String NAME_NOTE_ID = "name_note_id";
     public static final String THREE_CHARCTER_NAME = "three_charcter_name";
+    private static final String TAG = "MainActivity";
     @BindView(R.id.main_btn_generate)
     protected Button mBtnGenerate;
     private Box<NameNoteBean> nameNoteBox;
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NameNoteRvAdapter
 
     private void initRv() {
         mAdapter = new NameNoteRvAdapter();
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL,false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         mRv.setLayoutManager(layoutManager);
         mRv.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(this);
@@ -118,8 +120,13 @@ public class MainActivity extends AppCompatActivity implements NameNoteRvAdapter
     private void loadNameNote() {
         QueryBuilder<NameNoteBean> query = nameNoteBox.query();
         nameNotes = query.build().find();
-        if (nameNotes.size()!=0){
+        if (nameNotes.size() != 0) {
             mAdapter.setData(nameNotes);
+            mAdapter.notifyDataSetChanged();
+        }
+        for (NameNoteBean bean :
+                nameNotes) {
+            Log.d(TAG, "NameNoteBean:" + bean.toString());
         }
     }
 
@@ -128,20 +135,26 @@ public class MainActivity extends AppCompatActivity implements NameNoteRvAdapter
     }
 
 
-    public void startNameActivity(long id,String lastName){
+    public void startNameActivity(long id, String lastName) {
         Intent intent = new Intent(MainActivity.this, NameActivity.class);
-        intent.putExtra(NAME_NOTE_ID,id);
-        intent.putExtra(LAST_NAME,lastName);
-        //intent.putExtra(LAST_NAME,lastName);
-        //intent.putExtra(MID_NAME,midName);
+        Log.d(TAG, "onItemClick,id:" + id + " lastName:" + lastName);
+        intent.putExtra(NAME_NOTE_ID, id);
+        intent.putExtra(LAST_NAME, lastName);
         startActivity(intent);
     }
 
     @Override
-    public void onItemClick(int positon) {
-        NameNoteBean nameNoteBean = nameNotes.get(positon);
+    public void onItemClick(int position) {
+        NameNoteBean nameNoteBean = nameNotes.get(position);
         long id = nameNoteBean.getId();
         String lastName = nameNoteBean.getItemName();
-        startNameActivity(id,lastName);
+        startNameActivity(id, lastName);
+    }
+
+    @Override
+    public void onLongClick(int position) {
+        NameNoteBean nameNoteBean = nameNotes.get(position);
+        nameNoteBox.remove(nameNoteBean);
+        loadNameNote();
     }
 }
