@@ -14,8 +14,11 @@ import android.widget.Toast;
 
 import com.ifading.namemachine.R;
 import com.ifading.namemachine.adapter.NameNoteRvAdapter;
+import com.ifading.namemachine.db.NameBean;
 import com.ifading.namemachine.db.NameNoteBean;
 import com.ifading.namemachine.db.ObjectBoxUtils;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
 import java.util.List;
 
@@ -152,9 +155,24 @@ public class MainActivity extends AppCompatActivity implements NameNoteRvAdapter
     }
 
     @Override
-    public void onLongClick(int position) {
-        NameNoteBean nameNoteBean = nameNotes.get(position);
-        nameNoteBox.remove(nameNoteBean);
-        loadNameNote();
+    public void onLongClick(final int position) {
+        new QMUIDialog.MessageDialogBuilder(this)
+                .setTitle("提示")
+                .setMessage("确定要删除该姓名本吗？")
+                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                    }
+                })
+                .addAction("确定", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                        NameNoteBean nameNoteBean = nameNotes.get(position);
+                        nameNoteBox.remove(nameNoteBean);
+                        loadNameNote();
+                    }
+                }).show();
     }
 }

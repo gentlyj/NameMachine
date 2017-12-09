@@ -16,6 +16,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/main_rv"
+        android:layout_above="@+id/main_btn_generate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

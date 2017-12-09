@@ -26,6 +26,7 @@ import io.objectbox.Box;
 
 public class TanTanCallback extends RenRenCallback {
     private static final int MAX_ROTATION = 15;
+    private static final String TAG = "TanTanCallback";
 
     //2016 12 26 考虑 探探垂直上下方向滑动，不删除卡片，
     //判断 此次滑动方向是否是竖直的 ，水平方向上的误差(阈值，默认我给了50dp)
@@ -107,16 +108,17 @@ public class TanTanCallback extends RenRenCallback {
         super.onSwiped(viewHolder, direction);
         //如果不需要循环删除
         Object remove = mDatas.remove(viewHolder.getLayoutPosition());
+        Log.d(TAG, "onSwiped,viewHolder.getLayoutPosition():" + viewHolder.getLayoutPosition() + " mDatas:" + mDatas.size());
         mAdapter.notifyDataSetChanged();
 
-       if (isLeftSwipe){
-           Toast.makeText(mRv.getContext(), "喜欢", Toast.LENGTH_SHORT).show();
-           NameBean nameBean = new NameBean();
-           nameBean.setBook("cuci.txt");
-           nameBean.setName((String)remove);
-           nameBean.setNameNoteId(mNameNoteId);
-           mBox.put(nameBean);
-       }
+        if (isLeftSwipe) {
+            Toast.makeText(mRv.getContext(), "喜欢", Toast.LENGTH_SHORT).show();
+            NameBean nameBean = new NameBean();
+            nameBean.setBook("cuci.txt");
+            nameBean.setName((String) remove);
+            nameBean.setNameNoteId(mNameNoteId);
+            mBox.put(nameBean);
+        }
 
         //探探只是第一层加了rotate & alpha的操作
         //对rotate进行复位
@@ -129,6 +131,25 @@ public class TanTanCallback extends RenRenCallback {
             holder.setAlpha(R.id.iv_del, 0);
         }*/
 
+    }
+
+    /**
+     * 是否喜欢当前name,true->喜欢, false-> 不喜欢
+     *
+     * @param like 是否喜欢
+     */
+    public void likeCurrnetName(boolean like) {
+        Object remove = mDatas.remove(mDatas.size() - 1);
+        mAdapter.notifyDataSetChanged();
+
+        if (like) {
+            Toast.makeText(mRv.getContext(), "喜欢", Toast.LENGTH_SHORT).show();
+            NameBean nameBean = new NameBean();
+            nameBean.setBook("cuci.txt");
+            nameBean.setName((String) remove);
+            nameBean.setNameNoteId(mNameNoteId);
+            mBox.put(nameBean);
+        }
     }
 
     @Override
@@ -199,7 +220,7 @@ public class TanTanCallback extends RenRenCallback {
     }
 
 
-    public void setBox(Box box){
+    public void setBox(Box box) {
         this.mBox = box;
     }
 

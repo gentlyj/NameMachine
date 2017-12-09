@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ifading.namemachine.R;
@@ -25,6 +26,7 @@ import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.objectbox.Box;
 
 public class SelectActivity extends AppCompatActivity {
@@ -44,6 +46,12 @@ public class SelectActivity extends AppCompatActivity {
     private Box<NameBean> namesBox;
     private String lastName;
     private int nameNoteId;
+
+    @BindView(R.id.name_activity_iv_like)
+    protected ImageView mIvLike;
+    @BindView(R.id.name_activity_iv_delete)
+    protected ImageView mIvDelete;
+    private TanTanCallback callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +82,7 @@ public class SelectActivity extends AppCompatActivity {
         mRv.setLayoutManager(new OverLayCardLayoutManager());
         mRv.setAdapter(mAdapter);
         CardConfig.initConfig(this);
-        final TanTanCallback callback = new TanTanCallback(mRv, mAdapter, mNameList);
+        callback = new TanTanCallback(mRv, mAdapter, mNameList);
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(mRv);
         mAdapter.notifyDataSetChanged();
@@ -82,8 +90,17 @@ public class SelectActivity extends AppCompatActivity {
         callback.setNameNoteId(nameNoteId);
     }
 
+    @OnClick({R.id.name_activity_iv_delete,R.id.name_activity_iv_like})
+    public void onClick(View v){
+        if (v == mIvLike){
+            callback.likeCurrnetName(true);
+        }else if (v == mIvDelete){
+            callback.likeCurrnetName(false);
+        }
+    }
+
     private void initNameTable() {
-        //todo 还要研究 objectBox 关于关联表,和每个表名的关系,现在有点蒙圈啊,怎么区分呢
+        //Object不分表,比较坑啊
         namesBox = ObjectBoxUtils.getBoxStore().boxFor(NameBean.class);
     }
 

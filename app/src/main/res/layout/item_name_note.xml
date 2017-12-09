@@ -7,6 +7,7 @@
         android:layout_margin="10dp"
         android:padding="3dp"
         android:gravity="center_vertical"
+        android:layout_centerInParent="true"
         android:id="@+id/item_name_note_name"
         android:textColor="@color/black"
         android:layout_width="wrap_content"

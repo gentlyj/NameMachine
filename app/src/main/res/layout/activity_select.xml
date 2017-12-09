@@ -37,9 +37,37 @@
             android:layout_height="match_parent" />
     </RelativeLayout>
 
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:id="@+id/name_activity_select_container"
+        android:layout_width="match_parent"
+        android:layout_height="58dp">
+        <ImageView
+            android:padding="10dp"
+            android:layout_marginStart="20dp"
+            android:id="@+id/name_activity_iv_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/like"/>
+
+        <ImageView
+            android:padding="10dp"
+            android:layout_marginEnd="20dp"
+            android:id="@+id/name_activity_iv_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/delete"/>
+
+    </RelativeLayout>
+
     <android.support.v7.widget.RecyclerView
         android:layout_below="@+id/name_tv_title"
-        android:layout_above="@+id/name_activity_generate_name"
+        android:layout_above="@+id/name_activity_select_container"
         android:id="@+id/name_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

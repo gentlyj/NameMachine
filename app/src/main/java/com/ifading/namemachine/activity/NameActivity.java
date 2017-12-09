@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.ifading.namemachine.R;
@@ -21,6 +23,8 @@ import com.ifading.namemachine.constant.NameConstant;
 import com.ifading.namemachine.db.NameBean;
 import com.ifading.namemachine.db.NameBean_;
 import com.ifading.namemachine.db.ObjectBoxUtils;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -41,6 +45,10 @@ import io.objectbox.query.QueryBuilder;
 
 public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnItemClickListener {
     private static final String TAG = "NameActivity";
+    /**
+     * Gridlayout colume count
+     */
+    private static final int SPAN_COUNT = 3;
     @BindView(R.id.name_activity_tv_last_name)
     protected TextView mTvLastName;
     @BindView(R.id.name_activity_tv_mid_name)
@@ -70,7 +78,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
         ButterKnife.bind(this);
         Intent intent = getIntent();
 
-        nameNoteId = (int) intent.getLongExtra(MainActivity.NAME_NOTE_ID,0);
+        nameNoteId = (int) intent.getLongExtra(MainActivity.NAME_NOTE_ID, 0);
         lastName = intent.getStringExtra(MainActivity.LAST_NAME);
         Log.d(TAG, "nameNoteId:" + nameNoteId + " lastName:" + lastName);
         mTvLastName.setText(lastName);
@@ -91,7 +99,7 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
 
     private void initView() {
         mAdapter = new NameRvAdapter();
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this.getApplicationContext(), SPAN_COUNT, LinearLayoutManager.VERTICAL, false);
         mRv.setLayoutManager(layoutManager);
         mRv.setAdapter(mAdapter);
     }
@@ -102,7 +110,8 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
 
     private void loadAndShowData() {
         Log.d(TAG, "loadAndShowData,nameNoteId:" + nameNoteId);
-        QueryBuilder<NameBean> query = namesBox.query().equal(NameBean_.nameNoteId, nameNoteId);//
+        QueryBuilder<NameBean> query = namesBox.query().equal(NameBean_.nameNoteId, nameNoteId);
+
         nameDatas = query.build().find();
         mAdapter.setData(nameDatas);
         mAdapter.notifyDataSetChanged();
@@ -110,8 +119,10 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
         //addNameNoteId();
         for (NameBean bean :
                 nameDatas) {
-            Log.d(TAG, "NAME:" + bean.toString());
+            Log.d(TAG, "NAME:" + bean.toString() + " id:" + bean.getNameNoteId());
+            //bean.setNameNoteId(3);
         }
+        //namesBox.put(nameDatas);
     }
 
     private void addNameNoteId() {
@@ -297,9 +308,25 @@ public class NameActivity extends AppCompatActivity implements NameRvAdapter.OnI
     }
 
     @Override
-    public void onItemLongClick(int position) {
-        NameBean nameBean = nameDatas.get(position);
-        namesBox.remove(nameBean);
-        loadAndShowData();
+    public void onItemLongClick(final int position) {
+
+        new QMUIDialog.MessageDialogBuilder(this)
+                .setTitle("提示")
+                .setMessage("确定要删除这个名字吗？")
+                .addAction("取消", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                    }
+                })
+                .addAction("确定", new QMUIDialogAction.ActionListener() {
+                    @Override
+                    public void onClick(QMUIDialog dialog, int index) {
+                        dialog.dismiss();
+                        NameBean nameBean = nameDatas.get(position);
+                        namesBox.remove(nameBean);
+                        loadAndShowData();
+                    }
+                }).show();
     }
 }
